@@ -87,15 +87,15 @@ create_hdfs_config_template() {
   </property>
   <property>
     <name>dfs.namenode.name.dir</name>
-    <value>/tmp/hdfs-namenode</value>
+    <value>file:///tmp/hdfs-namenode</value>
   </property>
   <property>
     <name>dfs.datanode.data.dir</name>
-    <value>/tmp/hdfs-data</value>
+    <value>file:///tmp/hdfs-data</value>
   </property>
   <property>
     <name>dfs.namenode.shared.edits.dir</name>
-    <value>/tmp/hdfs-edits</value>
+    <value>file:///tmp/hdfs-edits</value>
   </property>
   <property>
     <name>dfs.ha.automatic-failover.enabled</name>
