@@ -55,6 +55,7 @@ Group={{ service_user }}
 EnvironmentFile={{ service_env_file }}
 Type={{ service_type }}
 ExecStartPre=/usr/bin/env
+ExecStartPre={{ hdfs_cmd_zkfc_format }}
 ExecStartPre={{ hdfs_cmd_zkfc_start }}
 ExecStart={{ hdfs_cmd_namenode_start }}
 WorkingDirectory={{ service_working_dir }}
