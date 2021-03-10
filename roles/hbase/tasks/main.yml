@@ -28,13 +28,34 @@
 
   - name: Write config template
     ansible.builtin.command:
-      cmd: "hbase/files/hbase-config.sh"
+      cmd: "roles/hbase/files/hbase-config.sh"
+    delegate_to: localhost
+
+  - name: Write config template
+    ansible.builtin.command:
+      cmd: "roles/hbase/files/hbase-service-config.sh"
     delegate_to: localhost
 
   - name: Create hbase-site.xml
-    template: src={{ hbase_config_path }}/hbase-site.xml.j2 dest={{ hbase_config_path }}/hbase-site.xml mode=0700
+    template: src={{ hbase_config_path }}/hbase-site.xml.j2 dest={{ hbase_config_path }}/hbase-site.xml mode=0640
+
+
+  - name: Create systemd unit env file
+    template: src={{ hbase_config_path}}/systemd-env-{{ service }}.j2 dest=/etc/systemd-env-{{ service }} mode=0640
+    become: yes
 
   - name: Create systemd unit for HBase master
-    template: src={{ hbase_config_path}}/hbase.service.j2 dest=/etc/systemd/system/hbase.service mode=0700
+    template: src={{ hbase_config_path}}/hbase-master.service.j2 dest=/etc/systemd/system/hbase-master.service mode=0600
     become: yes
     when: ansible_distribution != "FreeBSD"
+    become: yes
+
+  - name: Create systemd unit for HBase regionserver
+    template: src={{ hbase_config_path}}/hbase-master.service.j2 dest=/etc/systemd/system/hbase-master.service mode=0600
+    become: yes
+    when: ansible_distribution != "FreeBSD"
+    become: yes
+
+  - name: Fix permissions
+    command: chown -R {{ service }}:{{ service }} {{ hbase_path }}/{{ hbase_dir }}
+    become: yes

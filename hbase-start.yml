@@ -1,0 +1,15 @@
+---
+
+- hosts: namenodes
+
+  vars:
+    service-hbase-master: hbase-master
+    service-hbase-regionserver: hbase-regionserver
+
+  tasks:
+
+    - name: Start {{ service-master }}
+      service: name={{ service-master }} state=started enabled=yes
+
+    - name: Start {{ service-hbase-regionserver }}
+      service: name={{ service-hbase-regionserver }} state=started enabled=yes

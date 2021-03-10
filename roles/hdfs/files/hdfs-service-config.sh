@@ -49,15 +49,16 @@ After=network-online.target
 Requires=network-online.target
 
 [Service]
-User=hdfs
-Group=hdfs
-EnvironmentFile=/etc/systemd-env-hdfs
+User={{ service_user }}
+Group={{ service_user }}
+EnvironmentFile={{ service_env_file }}
 Type=forking
-ExecStart=
-ExecStop=
-WorkingDirectory={{ hadoop_working_dir }}
+ExecStartPre={{ hdfs_cmd_zkfc_start }}
+ExecStart={{ hdfs_cmd_namenode_start }}
+WorkingDirectory={{ service_working_dir }}
 TimeoutStartSec=2min
 Restart=on-failure
+RestartSec={{ service_failure_restart_interval_s }}
 PIDFile=/tmp/hadoop-hadoop-namenode.pid
 
 [Install]
@@ -74,14 +75,15 @@ After=network-online.target
 Requires=network-online.target
 
 [Service]
-User=hdfs
-Group=hdfs
-EnvironmentFile=/etc/systemd-env-hdfs
+User={{ service_user }}
+Group={{ service_user }}
+EnvironmentFile={{ service_env_file }}
 Type=forking
 ExecStart={{ hdfs_cmd_datanode_start }}
 WorkingDirectory={{ hadoop_working_dir}}
 TimeoutStartSec=2min
 Restart=on-failure
+RestartSec={{ service_failure_restart_interval_s }}
 PIDFile=/tmp/hadoop-hadoop-namenode.pid
 
 [Install]
@@ -98,14 +100,15 @@ After=network-online.target
 Requires=network-online.target
 
 [Service]
-User=hdfs
-Group=hdfs
-EnvironmentFile=/etc/systemd-env-hdfs
+User={{ service_user }}
+Group={{ service_user }}
+EnvironmentFile={{ service_env_file }}
 Type=forking
 ExecStart={{ hdfs_cmd_journalnode_start }}
 WorkingDirectory={{ hadoop_working_dir }}
 TimeoutStartSec=2min
 Restart=on-failure
+RestartSec={{ service_failure_restart_interval_s }}
 PIDFile=/tmp/hadoop-hadoop-namenode.pid
 
 [Install]

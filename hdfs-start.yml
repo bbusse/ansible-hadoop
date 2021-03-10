@@ -1,0 +1,19 @@
+---
+
+- hosts: namenodes
+
+  vars:
+    service_namenode: hdfs-namenode
+    service_datanode: hdfs-datanode
+    service_journalnode: hdfs-journalnode
+
+  tasks:
+
+    - name: Start {{ service_namenode }}
+      service: name={{ service_namenode }} state=restarted enabled=yes
+
+    - name: Start {{ service_datanode }}
+      service: name={{ service_datanode }} state=restarted enabled=yes
+
+    - name: Start {{ service_journalnode }}
+      service: name={{ service_journalnode }} state=restarted enabled=yes
