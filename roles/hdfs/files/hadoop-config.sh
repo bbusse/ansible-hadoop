@@ -97,10 +97,18 @@ create_hdfs_config_template() {
     <name>dfs.namenode.shared.edits.dir</name>
     <value>/tmp/hdfs-edits</value>
   </property>
- <property>
-   <name>dfs.ha.automatic-failover.enabled</name>
-   <value>true</value>
- </property>
+  <property>
+    <name>dfs.ha.automatic-failover.enabled</name>
+    <value>true</value>
+  </property>
+  <property>
+      <name>dfs.ha.fencing.methods</name>
+      <value>sshfence</value>
+    </property>
+  <property>
+     <name>dfs.ha.fencing.ssh.private-key-files</name>
+     <value>/home/{{ service }}/.ssh/{{ ssh_keyfile }}</value>
+  </property>
   <property>
     <name>ha.zookeeper.quorum</name>
     <value>127.0.0.1:2181</value>
