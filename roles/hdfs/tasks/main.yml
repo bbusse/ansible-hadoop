@@ -70,8 +70,14 @@
     when: ansible_distribution != "FreeBSD"
 
   - name: Fix permissions
-    command: chown -R {{ service }}:{{ service }} {{ hadoop_path }}/{{ hadoop_dir }}
-    become: yes
+    - name: Change ownership of {{ service }} dir
+      ansible.builtin.file:
+        path: "{{ haddop_path }}/{{ hadoop_dir }}"
+        state: directory
+        recurse: yes
+        owner: "{{ service }}"
+        group: "{{ service }}"
+      become: yes
 
   - name: Format HDFS for HA
     service: name={{ service_hdfs_bootstrap }} state=started
