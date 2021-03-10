@@ -111,7 +111,7 @@ create_hdfs_config_template() {
   </property>
   <property>
     <name>ha.zookeeper.quorum</name>
-    <value>127.0.0.1:2181</value>
+    <value>{{ zookeeper_quorum }}</value>
   </property>
 </configuration>
 EOF
