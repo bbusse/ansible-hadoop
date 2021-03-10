@@ -1,5 +1,9 @@
 ---
 
+  - name: Create {{ service }} user
+    user: name={{ service }} comment={{ service }} shell=/bin/nologin createhome=no system=yes
+    become: yes
+
   - name: Download Hadoop archive if not existent
     get_url:
       url: "{{ hadoop_archive_url }}"
@@ -27,6 +31,11 @@
       cmd: "roles/hdfs/files/hadoop-config.sh"
     delegate_to: localhost
 
+  - name: Write service templates
+    ansible.builtin.command:
+      cmd: "roles/hdfs/files/hdfs-service-config.sh"
+    delegate_to: localhost
+
   - name: Create core-site.xml
     template: src={{ hadoop_config_path}}/core-site.xml.j2 dest={{ hadoop_config_path}}/core-site.xml mode=0700
 
@@ -35,3 +44,31 @@
 
   - name: Create mapred-site.xml
     template: src={{ hadoop_config_path}}/core-site.xml.j2 dest={{ hadoop_config_path}}/mapred-site.xml mode=0700
+
+  - name: Create systemd unit env file
+    template: src={{ hadoop_config_path}}/systemd-env-hdfs.j2 dest=/etc/systemd-env-hdfs mode=0700
+    become: yes
+    when: ansible_distribution != "FreeBSD"
+
+  - name: Create systemd unit for HDFS bootstrap - formatting the namenode
+    template: src={{ hadoop_config_path}}/hdfs-bootstrap.service.j2 dest=/etc/systemd/system/hdfs-bootstrap.service mode=0700
+    become: yes
+    when: ansible_distribution != "FreeBSD"
+
+  - name: Create systemd unit for HDFS namenode
+    template: src={{ hadoop_config_path}}/hdfs-namenode.service.j2 dest=/etc/systemd/system/hdfs-namenode.service mode=0700
+    become: yes
+    when: ansible_distribution != "FreeBSD"
+
+  - name: Create systemd unit for HDFS datanode
+    template: src={{ hadoop_config_path}}/hdfs-datanode.service.j2 dest=/etc/systemd/system/hdfs-datanode.service mode=0700
+    become: yes
+    when: ansible_distribution != "FreeBSD"
+
+  - name: Create systemd unit for HDFS journalnode
+    template: src={{ hadoop_config_path}}/hdfs-journalnode.service.j2 dest=/etc/systemd/system/hdfs-journalnode.service mode=0700
+    become: yes
+    when: ansible_distribution != "FreeBSD"
+
+  - name: Format HDFS for HA
+    service: name={{ service_hdfs_bootstrap }} state=started

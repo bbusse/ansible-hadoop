@@ -1,5 +1,9 @@
 ---
 
+  - name: Create {{ service }} user
+    user: name={{ service }} comment={{ service }} shell=/bin/nologin createhome=no system=yes
+    become: yes
+
   - name: Download HBase archive locally
     get_url:
       url: "{{ hbase_archive_url }}"
@@ -29,3 +33,8 @@
 
   - name: Create hbase-site.xml
     template: src={{ hbase_config_path }}/hbase-site.xml.j2 dest={{ hbase_config_path }}/hbase-site.xml mode=0700
+
+  - name: Create systemd unit for HBase master
+    template: src={{ hbase_config_path}}/hbase.service.j2 dest=/etc/systemd/system/hbase.service mode=0700
+    become: yes
+    when: ansible_distribution != "FreeBSD"
