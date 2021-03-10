@@ -28,6 +28,7 @@ User={{ service_user }}
 Group={{ service_user }}
 EnvironmentFile={{ service_env_file }}
 Type={{ service_type }}
+ExecStartPre=/usr/bin/env
 ExecStart={{ hbase_cmd_master }}
 WorkingDirectory={{ service_working_dir }}
 TimeoutStartSec=2min
@@ -65,6 +66,7 @@ WantedBy=multi-user.target
 EOF
     echo "$CONFIG"
 }
+
 HBASE_MASTER_TEMPLATE=$(create_hbase_master_systemd_unit_template)
 HBASE_REGIONSERVER_TEMPLATE=$(create_hbase_regionserver_systemd_unit_template)
 HBASE_ENV_TEMPLATE=$(create_hbase_systemd_env_template)
