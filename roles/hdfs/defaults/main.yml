@@ -4,7 +4,7 @@ service_working_dir: "{{ hadoop_path }}"
 service_env_file: "/etc/systemd-env-{{ service }}"
 service_failure_restart_interval_s: 30
 service_hdfs_bootstrap: "hdfs-bootstrap"
-service_type: "forking"
+service_type: "exec"
 hadoop_version: "2.10.0"
 hadoop_dir: "hadoop"
 hadoop_home: "{{ hadoop_path }}/hadoop"
