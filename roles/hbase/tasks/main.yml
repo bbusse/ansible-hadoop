@@ -20,11 +20,12 @@
 
   - name: Recursively remove directory
     ansible.builtin.file:
-      path: /tmp/hbase
+      path: "{{ hbase_path }}/{{ hbase_dir }}"
       state: absent
+    become: yes
 
   - name: Rename dir
-    command: mv -f /tmp/hbase-0.96.1.1-hadoop2 /tmp/hbase
+    command: mv -f {{ hbase_path }}/hbase-{{ hbase_version }} {{ hbase_path }}/{{ hbase_dir }}
 
   - name: Write config template
     ansible.builtin.command:
@@ -56,6 +57,20 @@
     when: ansible_distribution != "FreeBSD"
     become: yes
 
-  - name: Fix permissions
-    command: chown -R {{ service }}:{{ service }} {{ hbase_path }}/{{ hbase_dir }}
+  - name: Change ownership of {{ service }} dir
+    ansible.builtin.file:
+      path: "{{ hbase_path }}/{{ hbase_dir }}"
+      state: directory
+      recurse: yes
+      owner: "{{ service }}"
+      group: "{{ service }}"
+    become: yes
+
+  - name: Create {{ service }} log directory
+    file:
+      path: "{{ service_log_dir }}"
+      state: directory
+      mode: '0750'
+      owner: "{{ service_user }}"
+      group: "{{ service_user }}"
     become: yes

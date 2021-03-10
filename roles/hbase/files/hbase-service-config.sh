@@ -11,6 +11,7 @@ source setup.sh
 create_hbase_systemd_env_template() {
     read -r -d '' CONFIG <<EOF
 JAVA_HOME={{ java_home }}
+HBASE_LOG_DIR={{ service_log_dir }}
 EOF
     echo "$CONFIG"
 }
@@ -26,13 +27,13 @@ Requires=network-online.target
 User={{ service_user }}
 Group={{ service_user }}
 EnvironmentFile={{ service_env_file }}
-Type=Forking
+Type={{ service_type }}
 ExecStart={{ hbase_cmd_master }}
 WorkingDirectory={{ service_working_dir }}
 TimeoutStartSec=2min
 PIDFile={{ hbase_master_pid_file }}
 Restart=on-failure
-Restartsec={{ service_failure_restart_interval_s }}
+RestartSec={{ service_failure_restart_interval_s }}
 
 [Install]
 WantedBy=multi-user.target
