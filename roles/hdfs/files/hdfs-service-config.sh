@@ -12,16 +12,16 @@ source setup.sh
 
 create_hdfs_systemd_env_template() {
     read -r -d '' CONFIG <<EOF
-JAVA_HOME=/tmp/hadoop
-HADOOP_HOME=/tmp/hadoop
+JAVA_HOME=/
+HADOOP_HOME={{ hadoop_home }}
 EOF
-    echo $CONFIG
+    echo "$CONFIG"
 }
 
 create_hdfs_bootstrap_systemd_unit_template() {
     read -r -d '' CONFIG <<EOF
 [Unit]
-Description=HDFS namenode
+Description=HDFS bootstrap namenode
 After=network-online.target
 Requires=network-online.target
 
@@ -32,7 +32,7 @@ EnvironmentFile=/etc/systemd-env-hdfs
 Type=oneshot
 ExecStartPre={{ hdfs_cmd_format }}
 ExecStart={{ hdfs_cmd_format_ha }}
-WorkingDirectory=/tmp/hadoop/
+WorkingDirectory={{ hadoop_working_dir }}
 TimeoutStartSec=2min
 PIDFile=/tmp/hadoop-hadoop-namenode.pid
 
@@ -55,7 +55,7 @@ EnvironmentFile=/etc/systemd-env-hdfs
 Type=forking
 ExecStart=
 ExecStop=
-WorkingDirectory=/tmp/hadoop/
+WorkingDirectory={{ hadoop_working_dir }}
 TimeoutStartSec=2min
 Restart=on-failure
 PIDFile=/tmp/hadoop-hadoop-namenode.pid
@@ -63,37 +63,13 @@ PIDFile=/tmp/hadoop-hadoop-namenode.pid
 [Install]
 WantedBy=multi-user.target
 EOF
-    echo $CONFIG
+    echo "$CONFIG"
 }
 
 create_hdfs_datanode_systemd_unit_template() {
     read -r -d '' CONFIG <<EOF
 [Unit]
-Description=HDFS namenode
-After=network-online.target
-Requires=network-online.target
-
-[Service]
-User=hdfs
-Group=hdfs
-EnvironmentFile=/etc/systemd-env-hdfs
-Type=forking
-ExecStart={{ hdfs_cmd_namenode_start }}
-WorkingDirectory=/tmp/hadoop/
-TimeoutStartSec=2min
-Restart=on-failure
-PIDFile=/tmp/hadoop-hadoop-namenode.pid
-
-[Install]
-WantedBy=multi-user.target
-EOF
-    echo $CONFIG
-}
-
-create_hdfs_datanode_systemd_unit_template() {
-    read -r -d '' CONFIG <<EOF
-[Unit]
-Description=HDFS namenode
+Description=HDFS datanode
 After=network-online.target
 Requires=network-online.target
 
@@ -103,7 +79,7 @@ Group=hdfs
 EnvironmentFile=/etc/systemd-env-hdfs
 Type=forking
 ExecStart={{ hdfs_cmd_datanode_start }}
-WorkingDirectory=/tmp/hadoop/
+WorkingDirectory={{ hadoop_working_dir}}
 TimeoutStartSec=2min
 Restart=on-failure
 PIDFile=/tmp/hadoop-hadoop-namenode.pid
@@ -111,13 +87,13 @@ PIDFile=/tmp/hadoop-hadoop-namenode.pid
 [Install]
 WantedBy=multi-user.target
 EOF
-    echo $CONFIG
+    echo "$CONFIG"
 }
 
 create_hdfs_journalnode_systemd_unit_template() {
     read -r -d '' CONFIG <<EOF
 [Unit]
-Description=HDFS namenode
+Description=HDFS journalnode
 After=network-online.target
 Requires=network-online.target
 
@@ -127,7 +103,7 @@ Group=hdfs
 EnvironmentFile=/etc/systemd-env-hdfs
 Type=forking
 ExecStart={{ hdfs_cmd_journalnode_start }}
-WorkingDirectory=/tmp/hadoop/
+WorkingDirectory={{ hadoop_working_dir }}
 TimeoutStartSec=2min
 Restart=on-failure
 PIDFile=/tmp/hadoop-hadoop-namenode.pid
@@ -135,7 +111,7 @@ PIDFile=/tmp/hadoop-hadoop-namenode.pid
 [Install]
 WantedBy=multi-user.target
 EOF
-    echo $CONFIG
+    echo "$CONFIG"
 }
 
 HDFS_BOOTSTRAP_TEMPLATE=$(create_hdfs_bootstrap_systemd_unit_template)
